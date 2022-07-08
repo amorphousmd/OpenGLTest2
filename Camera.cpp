@@ -1,6 +1,6 @@
 #include"Camera.h"
 
-
+double scroll = 1.0;
 
 Camera::Camera(int width, int height, glm::vec3 position)
 {
@@ -31,21 +31,17 @@ void Camera::Matrix(Shader& shader, const char* uniform)
 }
 
 
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
+{
+	scroll = yoffset;
+}
 
 void Camera::Inputs(GLFWwindow* window)
 {
 	// Handles key inputs
-	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
-	{
-		Position += speed * Orientation;
-	}
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
 	{
 		Position += speed * glm::normalize(glm::cross(Orientation, Up)) * 0.01f;
-	}
-	if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
-	{
-		Position += speed * -Orientation;
 	}
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 	{
@@ -69,6 +65,19 @@ void Camera::Inputs(GLFWwindow* window)
 	}
 
 
+	glfwSetScrollCallback(window, scroll_callback);
+	if (scroll != 0)
+	{
+	if (scroll > 0)
+	{
+		Position += speed * Orientation * 10.0f;
+	}
+	if (scroll < 0)
+	{
+		Position += speed * -Orientation * 10.0f;
+	}
+	scroll = 0;
+	}
 	// Handles mouse inputs
 	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
 	{
